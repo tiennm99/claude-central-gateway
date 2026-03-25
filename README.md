@@ -10,6 +10,46 @@ Check out [this repo](https://github.com/tiennm99/penny-pincher-provider) for a 
 
 Minimal, simple, deploy anywhere.
 
+## Quick Start
+
+### 1. Deploy to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tiennm99/claude-central-gateway)
+
+Or manually:
+
+```bash
+git clone https://github.com/tiennm99/claude-central-gateway
+cd claude-central-gateway
+vercel
+```
+
+### 2. Set Environment Variables
+
+In Vercel dashboard, set these environment variables:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `GATEWAY_TOKEN` | Shared token for authentication | `my-secret-token` |
+| `OPENAI_API_KEY` | Your OpenAI API key | `sk-...` |
+| `MODEL_MAP` | Model name mapping | `claude-sonnet-4-20250514:gpt-4o` |
+
+### 3. Configure Claude Code
+
+```bash
+export ANTHROPIC_BASE_URL=https://your-gateway.vercel.app
+export ANTHROPIC_AUTH_TOKEN=my-secret-token
+claude
+```
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GATEWAY_TOKEN` | Yes | Token users must provide in `ANTHROPIC_AUTH_TOKEN` |
+| `OPENAI_API_KEY` | Yes | OpenAI API key |
+| `MODEL_MAP` | No | Comma-separated model mappings (format: `claude:openai`) |
+
 ## Why This Project?
 
 ### Why not use a local proxy, like [Claude Code Router](https://github.com/musistudio/claude-code-router)?
