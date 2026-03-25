@@ -1,12 +1,12 @@
 {
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": null,
   "rewrites": [
     {
-      "source": "/v1/messages",
-      "destination": "/api/v1/messages"
-    },
-    {
-      "source": "/v1/:path*",
-      "destination": "/api/v1/:path*"
+      "source": "/(.*)",
+      "destination": "/api/index"
     }
   ]
 }

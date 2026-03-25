@@ -12,7 +12,7 @@ Minimal, simple, deploy anywhere.
 
 ## Quick Start
 
-### 1. Deploy to Vercel
+### Deploy to Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tiennm99/claude-central-gateway)
 
@@ -21,12 +21,24 @@ Or manually:
 ```bash
 git clone https://github.com/tiennm99/claude-central-gateway
 cd claude-central-gateway
+npm install
 vercel
 ```
 
-### 2. Set Environment Variables
+### Deploy to Cloudflare Workers
 
-In Vercel dashboard, set these environment variables:
+```bash
+git clone https://github.com/tiennm99/claude-central-gateway
+cd claude-central-gateway
+npm install
+npm run deploy:cf
+```
+
+### Set Environment Variables
+
+**Vercel**: Dashboard → Settings → Environment Variables
+
+**Cloudflare**: `wrangler.toml` or Dashboard → Workers → Variables
 
 | Variable | Description | Example |
 |----------|-------------|---------|
@@ -34,7 +46,7 @@ In Vercel dashboard, set these environment variables:
 | `OPENAI_API_KEY` | Your OpenAI API key | `sk-...` |
 | `MODEL_MAP` | Model name mapping | `claude-sonnet-4-20250514:gpt-4o` |
 
-### 3. Configure Claude Code
+### Configure Claude Code
 
 ```bash
 export ANTHROPIC_BASE_URL=https://your-gateway.vercel.app

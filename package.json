@@ -3,12 +3,20 @@
   "version": "1.0.0",
   "description": "A lightweight proxy for Claude Code that routes requests to third-party API providers",
   "private": true,
+  "type": "module",
   "scripts": {
-    "start": "vercel dev",
-    "deploy": "vercel --prod"
+    "dev": "hono dev",
+    "start": "hono start",
+    "deploy:vercel": "vercel --prod",
+    "deploy:cf": "wrangler deploy",
+    "dev:cf": "wrangler dev"
   },
   "dependencies": {
+    "hono": "^4.6.0",
     "openai": "^4.85.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
   },
   "engines": {
     "node": ">=18"

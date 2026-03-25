@@ -1,0 +1,9 @@
+name = "claude-central-gateway"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+# Set these in Cloudflare dashboard or wrangler.toml
+# GATEWAY_TOKEN = "your-token"
+# OPENAI_API_KEY = "sk-..."
+# MODEL_MAP = "claude-sonnet-4-20250514:gpt-4o"
