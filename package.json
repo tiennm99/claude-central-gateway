@@ -1,0 +1,16 @@
+{
+  "name": "claude-central-gateway",
+  "version": "1.0.0",
+  "description": "A lightweight proxy for Claude Code that routes requests to third-party API providers",
+  "private": true,
+  "scripts": {
+    "start": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "openai": "^4.85.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
