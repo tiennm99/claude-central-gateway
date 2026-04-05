@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
 import { cors } from 'hono/cors';
+import { authMiddleware } from './auth-middleware.js';
 import messages from './routes/messages.js';
 
 const app = new Hono();
@@ -9,8 +10,11 @@ const app = new Hono();
 app.use('*', logger());
 app.use('*', cors());
 
-// Health check
+// Health check (unauthenticated)
 app.get('/', (c) => c.json({ status: 'ok', name: 'Claude Central Gateway' }));
+
+// Auth middleware for API routes
+app.use('/v1/*', authMiddleware());
 
 // Routes
 app.route('/v1', messages);
