@@ -1,14 +1,23 @@
 # Claude Central Gateway
 
-A proxy for Claude Code that routes requests to your preferred third-party API provider. Easily hosted on Vercel, Netlify, and similar platforms.
+A lightweight proxy that translates Claude API requests to OpenAI's API, enabling cost optimization through cheaper third-party providers. Deploy on Vercel, Cloudflare Workers, or any Hono-compatible platform with zero configuration beyond environment variables.
+
+**Key Features:**
+- ✅ Full tool use/tool result support with proper round-trip handling
+- ✅ Streaming responses with Anthropic SSE format
+- ✅ Image content (base64 and URLs)
+- ✅ System message arrays
+- ✅ Timing-safe authentication (x-api-key header)
+- ✅ Stop sequences and stop reason mapping
+- ✅ Token usage tracking
 
 ## Where to Find Cheap LLM Providers?
 
-Check out [this repo](https://github.com/tiennm99/penny-pincher-provider) for a list of affordable LLM providers compatible with this gateway.
+Check out [this repo](https://github.com/tiennm99/penny-pincher-provider) for a list of affordable OpenAI-compatible providers.
 
 ## Philosophy
 
-Minimal, simple, deploy anywhere.
+Minimal, simple, deploy anywhere. No GUI, no database, no complexity.
 
 ## Quick Start
 
@@ -56,11 +65,28 @@ claude
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `GATEWAY_TOKEN` | Yes | Token users must provide in `ANTHROPIC_AUTH_TOKEN` |
-| `OPENAI_API_KEY` | Yes | OpenAI API key |
-| `MODEL_MAP` | No | Comma-separated model mappings (format: `claude:openai`) |
+| Variable | Required | Description | Example |
+|----------|----------|-------------|---------|
+| `GATEWAY_TOKEN` | Yes | Shared token for authentication via `x-api-key` header | `my-secret-token-123` |
+| `OPENAI_API_KEY` | Yes | OpenAI API key (with usage credits) | `sk-proj-...` |
+| `MODEL_MAP` | No | Model name mappings (comma-separated, format: `claude-model:openai-model`) | `claude-sonnet-4-20250514:gpt-4o,claude-opus:gpt-4-turbo` |
+
+## Features & Compatibility
+
+### Fully Supported
+- **Messages**: Text, images (base64 & URLs), tool results
+- **Tools**: Tool definitions, tool_use/tool_result round-trips, tool_choice constraints
+- **System**: String or array of text blocks
+- **Streaming**: Full SSE support with proper event sequencing
+- **Parameters**: `max_tokens`, `temperature`, `top_p`, `stop_sequences`
+- **Metadata**: Token usage counting, stop_reason mapping
+
+### Unsupported (Filtered Out)
+- Thinking blocks (Claude-specific)
+- Cache control directives
+- Vision-specific parameters
+
+See [API Reference](./docs/api-reference.md) for complete endpoint documentation.
 
 ## Why This Project?
 
@@ -78,6 +104,55 @@ Built for personal use. Simplicity over features.
 
 ## Not Suitable For
 
-- **Single-machine localhost proxy** → Highly recommend [Claude Code Router](https://github.com/musistudio/claude-code-router)
+- **Single-machine localhost proxy** → Use [Claude Code Router](https://github.com/musistudio/claude-code-router)
 - **Enterprise/Team usage with GUI management** → Use [LiteLLM](https://github.com/BerriAI/litellm)
-- **Advanced routing, load balancing, rate limiting** → Use [LiteLLM](https://github.com/BerriAI/litellm) or similar
+- **Advanced routing, load balancing, rate limiting, per-user auth** → Use [LiteLLM](https://github.com/BerriAI/litellm) or similar
+
+## Documentation
+
+- **[API Reference](./docs/api-reference.md)** - Complete endpoint documentation and examples
+- **[System Architecture](./docs/system-architecture.md)** - Request flow, data structures, deployment topology
+- **[Code Standards](./docs/code-standards.md)** - Module responsibilities, naming conventions, security practices
+- **[Project Overview & PDR](./docs/project-overview-pdr.md)** - Requirements, roadmap, product strategy
+
+## Development
+
+### Project Structure
+```
+src/
+├── index.js                  # Hono app entry point
+├── auth-middleware.js        # x-api-key validation with timing-safe comparison
+├── openai-client.js          # Cached OpenAI client, model mapping
+├── transform-request.js      # Anthropic → OpenAI transformation
+├── transform-response.js     # OpenAI → Anthropic SSE streaming
+└── routes/
+    └── messages.js           # POST /v1/messages handler
+```
+
+### Building Locally
+```bash
+npm install
+npm run dev              # Start local server (localhost:5173)
+```
+
+### Testing
+```bash
+# Manual test with curl
+curl -X POST http://localhost:5173/v1/messages \
+  -H "x-api-key: test-token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4-20250514",
+    "max_tokens": 256,
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
+
+### Deployment Checklist
+- [ ] Set `GATEWAY_TOKEN` to a strong random value (32+ characters)
+- [ ] Set `OPENAI_API_KEY` to your actual OpenAI API key
+- [ ] Configure `MODEL_MAP` if using non-standard model names
+- [ ] Test with Claude Code: `export ANTHROPIC_BASE_URL=...` and `export ANTHROPIC_AUTH_TOKEN=...`
+- [ ] Monitor OpenAI API usage and costs
+- [ ] Rotate `GATEWAY_TOKEN` periodically
+- [ ] Consider rate limiting if exposed to untrusted networks
